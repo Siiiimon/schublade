@@ -1,16 +1,62 @@
 #include <iostream>
 #include <windows.h>
 
+#define OPACITY 90
+#define WIDTH_PERCENTAGE 0.8
+#define HEIGHT_PERCENTAGE 0.5
+#define DROPDOWN_DISTANCE_IN_PIXEL_PER_TICK 20
+#define DROPDOWN_DURATION_IN_MILLISECONDS 200
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    static bool isAnimating = false;
+
     switch (uMsg)
     {
+        case WM_KEYDOWN: {
+            if (wParam == VK_ESCAPE) {
+                PostMessage(hwnd, WM_CLOSE, 0, 0);
+            }
+            return 0;
+        }
+        case WM_TIMER: {
+            if (isAnimating) {
+                RECT rect;
+                GetWindowRect(hwnd, &rect);
+                int currentY = rect.top;
+
+                if (currentY < 0) {
+                    SetWindowPos(hwnd, NULL, rect.left, currentY + DROPDOWN_DISTANCE_IN_PIXEL_PER_TICK, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                } else {
+                    KillTimer(hwnd, 1);
+                    isAnimating = false;
+                }
+            }
+            return 0;
+        }
+        case WM_SHOWWINDOW: {
+            if (wParam) {
+                int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+                int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+                int windowWidth = static_cast<int>(screenWidth * 0.8);
+                int windowHeight = static_cast<int>(screenHeight * 0.5);
+                int windowX = (screenWidth - windowWidth) / 2;
+
+                SetWindowPos(hwnd, NULL, windowX, -windowHeight, windowWidth, windowHeight, SWP_NOZORDER);
+
+                static int ticks = windowHeight / DROPDOWN_DISTANCE_IN_PIXEL_PER_TICK;
+
+                isAnimating = true;
+                SetTimer(hwnd, 1, DROPDOWN_DURATION_IN_MILLISECONDS / ticks, NULL);
+            }
+            return 0;
+        }
         case WM_PAINT: {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
 
-
-            HBRUSH hBrush = CreateSolidBrush(RGB(200, 80, 255));
+            HBRUSH hBrush = CreateSolidBrush(RGB(34, 37, 48));
             FillRect(hdc, &ps.rcPaint, hBrush);
             DeleteObject(hBrush);
 
@@ -30,8 +76,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow)
 {
-
-    LPCSTR CLASS_NAME  = "Schublade Window Class";
+    LPCSTR CLASS_NAME  = "SchubladeWindowClass";
 
     WNDCLASS wc = {};
     wc.lpfnWndProc = WindowProc;
@@ -41,10 +86,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        0,
+        WS_EX_TOPMOST | WS_EX_LAYERED,
         CLASS_NAME,
         "Schublade",
-        WS_OVERLAPPEDWINDOW,
+        WS_POPUP,
 
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 
@@ -59,7 +104,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         return 0;
     }
 
+    SetLayeredWindowAttributes(hwnd, 0, (255 * OPACITY) / 100, LWA_ALPHA);
+
     ShowWindow(hwnd, nCmdShow);
+    UpdateWindow(hwnd);
 
     std::cout << "Created Window!" << std::endl;
 
@@ -69,6 +117,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    UnregisterClass(CLASS_NAME, hInstance);
 
     return 0;
 }
