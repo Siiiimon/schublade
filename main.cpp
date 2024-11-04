@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <d2d1.h>
 #include <dwrite.h>
+#include "terminal.h"
 
 #define OPACITY 100
 #define WIDTH_PERCENTAGE 0.8
@@ -145,6 +146,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow)
 {
+    const char* input = "Hello from C++";
+    char* output = ProcessInput(const_cast<char*>(input));
+    std::cout << "Output from Go: " << output << std::endl;
+
     CoInitialize(NULL);
 
     LPCSTR CLASS_NAME  = "SchubladeWindowClass";
