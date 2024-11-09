@@ -19,14 +19,14 @@ func Initialize(shellPath *C.char) {
 	stdoutChan := make(chan string)
 	stdout, err := shell.StdoutPipe()
 	if err != nil {
-		fmt.Printf("Failed to get stdout pipe: %v\n", err)
+		Log("Shell", "Failed to get stdout pipe: %v\n", err)
 		return
 	}
 
 	stderrChan := make(chan string)
 	stderr, err := shell.StderrPipe()
 	if err != nil {
-		fmt.Printf("Failed to get stdout pipe: %v\n", err)
+		Log("Shell", "Failed to get stderr pipe: %v\n", err)
 		return
 	}
 
@@ -37,14 +37,14 @@ func Initialize(shellPath *C.char) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("running %d:%s\n", shell.Process.Pid, shell.Path)
+	Log("Kernel", "running %d:%s\n", shell.Process.Pid, shell.Path)
 
 	for output := range stdoutChan {
 		fmt.Printf("%s", output)
 	}
 
 	err = shell.Wait()
-	fmt.Printf("shell exited: %v\n", err)
+	Log("Kernel", "shell exited: %v\n", err)
 
 }
 
