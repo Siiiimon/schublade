@@ -7,49 +7,58 @@ import "C"
 
 import (
 	"fmt"
-	"os/exec"
+	"github.com/creack/pty"
+	"os"
 	"unsafe"
 )
 
 //export Initialize
 func Initialize(shellPath *C.char) {
 	goShellPath := C.GoString(shellPath)
-	shell := exec.Command(goShellPath)
+	shell := InitShell(goShellPath)
 
-	stdoutChan := make(chan string)
-	stdout, err := shell.StdoutPipe()
+	stdoutData := make(chan string)
+	//stderrChan := make(chan string)
+
+	ptmx, err := pty.Start(shell.Cmd)
 	if err != nil {
-		Log("Shell", "Failed to get stdout pipe: %v\n", err)
+		Log("Shell", "Failed to start PTY")
 		return
 	}
 
-	stderrChan := make(chan string)
-	stderr, err := shell.StderrPipe()
+	defer func(ptmx *os.File) {
+		err := ptmx.Close()
+		if err != nil {
+			Log("Shell", "Failed to close PTY")
+		}
+	}(ptmx)
+
+	go Parse(ptmx, stdoutData)
+
+	Log("Kernel", "Running %d:%s\n", shell.Cmd.Process.Pid, shell.Cmd.Path)
+
+	for {
+		output, ok := <-stdoutData
+		if ok {
+			Log("Kernel", "stdout got: %s\n", output)
+		} else {
+			break
+		}
+	}
+
+	Log("Kernel", "stdout/stderr channels closed\n")
+
+	Log("Kernel", "waiting for shell proc to exit...")
+	err = shell.Cmd.Wait()
 	if err != nil {
-		Log("Shell", "Failed to get stderr pipe: %v\n", err)
-		return
+		fmt.Printf(" failed with error %v\n", err)
+	} else {
+		fmt.Printf(" DONE\n")
 	}
-
-	go Parse(stdout, stdoutChan)
-	go Parse(stderr, stderrChan)
-
-	err = shell.Start()
-	if err != nil {
-		return
-	}
-	Log("Kernel", "running %d:%s\n", shell.Process.Pid, shell.Path)
-
-	for output := range stdoutChan {
-		fmt.Printf("%s", output)
-	}
-
-	err = shell.Wait()
-	Log("Kernel", "shell exited: %v\n", err)
-
 }
 
 func main() {
-	shellPath := C.CString("/bin/ls")
+	shellPath := C.CString("/bin/zsh")
 	defer C.free(unsafe.Pointer(shellPath))
 
 	Initialize(shellPath)
