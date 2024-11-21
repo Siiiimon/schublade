@@ -14,47 +14,49 @@ import (
 
 //export Initialize
 func Initialize(shellPath *C.char) {
-	goShellPath := C.GoString(shellPath)
-	shell := InitShell(goShellPath)
+	go func() {
+		goShellPath := C.GoString(shellPath)
+		shell := InitShell(goShellPath)
 
-	stdoutData := make(chan string)
-	//stderrChan := make(chan string)
+		stdoutData := make(chan string)
+		//stderrChan := make(chan string)
 
-	ptmx, err := pty.Start(shell.Cmd)
-	if err != nil {
-		Log("Shell", "Failed to start PTY")
-		return
-	}
-
-	defer func(ptmx *os.File) {
-		err := ptmx.Close()
+		ptmx, err := pty.Start(shell.Cmd)
 		if err != nil {
-			Log("Shell", "Failed to close PTY")
+			Log("Shell", "Failed to start PTY")
+			return
 		}
-	}(ptmx)
 
-	go Parse(ptmx, stdoutData)
+		defer func(ptmx *os.File) {
+			err := ptmx.Close()
+			if err != nil {
+				Log("Shell", "Failed to close PTY")
+			}
+		}(ptmx)
 
-	Log("Kernel", "Running %d:%s\n", shell.Cmd.Process.Pid, shell.Cmd.Path)
+		go Parse(ptmx, stdoutData)
 
-	for {
-		output, ok := <-stdoutData
-		if ok {
-			Log("Kernel", "stdout got: %s\n", output)
+		Log("Kernel", "Running %d:%s\n", shell.Cmd.Process.Pid, shell.Cmd.Path)
+
+		for {
+			output, ok := <-stdoutData
+			if ok {
+				PushEvent(Event{name: output})
+			} else {
+				break
+			}
+		}
+
+		Log("Kernel", "stdout/stderr channels closed\n")
+
+		Log("Kernel", "waiting for shell proc to exit...")
+		err = shell.Cmd.Wait()
+		if err != nil {
+			fmt.Printf(" failed with error %v\n", err)
 		} else {
-			break
+			fmt.Printf(" DONE\n")
 		}
-	}
-
-	Log("Kernel", "stdout/stderr channels closed\n")
-
-	Log("Kernel", "waiting for shell proc to exit...")
-	err = shell.Cmd.Wait()
-	if err != nil {
-		fmt.Printf(" failed with error %v\n", err)
-	} else {
-		fmt.Printf(" DONE\n")
-	}
+	}()
 }
 
 func main() {
