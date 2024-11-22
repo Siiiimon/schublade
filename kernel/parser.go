@@ -16,7 +16,7 @@ func scan(bytes []byte) ([]byte, *Event) {
 	for i, b := range bytes {
 		if b == '\r' {
 			return nil, &Event{
-				name: "LineFeed",
+				name: "CarriageReturn",
 				data: nil,
 			}
 		} else if b == '\x00' {
@@ -34,6 +34,11 @@ func scan(bytes []byte) ([]byte, *Event) {
 		} else if b == '\t' {
 			return nil, &Event{
 				name: "Tab",
+				data: nil,
+			}
+		} else if b == '\n' {
+			return nil, &Event{
+				name: "LineFeed",
 				data: nil,
 			}
 		} else {

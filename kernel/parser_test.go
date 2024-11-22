@@ -29,16 +29,16 @@ func TestScan(t *testing.T) {
 			input: "\x00",
 			want:  []Event{},
 		},
-		"line feed": {
+		"Carriage Return": {
 			input: "\r",
 			want: []Event{
 				{
-					name: "LineFeed",
+					name: "CarriageReturn",
 					data: nil,
 				},
 			},
 		},
-		"string with line feed": {
+		"string with carriage return": {
 			input: "foobar\r",
 			want: []Event{
 				{
@@ -46,7 +46,7 @@ func TestScan(t *testing.T) {
 					data: "foobar",
 				},
 				{
-					name: "LineFeed",
+					name: "CarriageReturn",
 					data: nil,
 				},
 			},
@@ -74,6 +74,15 @@ func TestScan(t *testing.T) {
 			want: []Event{
 				{
 					name: "Tab",
+					data: nil,
+				},
+			},
+		},
+		"line feed": {
+			input: "\n",
+			want: []Event{
+				{
+					name: "LineFeed",
 					data: nil,
 				},
 			},
