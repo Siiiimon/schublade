@@ -21,6 +21,11 @@ func scan(bytes []byte) ([]byte, *Event) {
 			}
 		} else if b == '\000' {
 			return nil, nil
+		} else if b == '\007' {
+			return nil, &Event{
+				name: "Bell",
+				data: nil,
+			}
 		} else {
 			// read until non-text byte
 			var textBuilder strings.Builder
