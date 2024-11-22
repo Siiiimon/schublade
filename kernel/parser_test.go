@@ -26,7 +26,7 @@ func TestScan(t *testing.T) {
 			want:  []Event{},
 		},
 		"null": {
-			input: "\000",
+			input: "\x00",
 			want:  []Event{},
 		},
 		"line feed": {
@@ -52,7 +52,7 @@ func TestScan(t *testing.T) {
 			},
 		},
 		"bell": {
-			input: "\007",
+			input: "\x07",
 			want: []Event{
 				{
 					name: "Bell",
@@ -61,7 +61,7 @@ func TestScan(t *testing.T) {
 			},
 		},
 		"backspace": {
-			input: "\010",
+			input: "\x08",
 			want: []Event{
 				{
 					name: "Backspace",

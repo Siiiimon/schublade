@@ -19,14 +19,14 @@ func scan(bytes []byte) ([]byte, *Event) {
 				name: "LineFeed",
 				data: nil,
 			}
-		} else if b == '\000' {
+		} else if b == '\x00' {
 			return nil, nil
-		} else if b == '\007' {
+		} else if b == '\x07' {
 			return nil, &Event{
 				name: "Bell",
 				data: nil,
 			}
-		} else if b == '\010' {
+		} else if b == '\x08' {
 			return nil, &Event{
 				name: "Backspace",
 				data: nil,
