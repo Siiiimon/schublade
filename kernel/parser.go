@@ -31,6 +31,11 @@ func scan(bytes []byte) ([]byte, *Event) {
 				name: "Backspace",
 				data: nil,
 			}
+		} else if b == '\t' {
+			return nil, &Event{
+				name: "Tab",
+				data: nil,
+			}
 		} else {
 			// read until non-text byte
 			var textBuilder strings.Builder

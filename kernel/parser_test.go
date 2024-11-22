@@ -69,6 +69,15 @@ func TestScan(t *testing.T) {
 				},
 			},
 		},
+		"tab": {
+			input: "\t",
+			want: []Event{
+				{
+					name: "Tab",
+					data: nil,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
