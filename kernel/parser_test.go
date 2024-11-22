@@ -60,6 +60,15 @@ func TestScan(t *testing.T) {
 				},
 			},
 		},
+		"backspace": {
+			input: "\010",
+			want: []Event{
+				{
+					name: "Backspace",
+					data: nil,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
