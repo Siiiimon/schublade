@@ -18,7 +18,7 @@ func Initialize(shellPath *C.char) {
 		goShellPath := C.GoString(shellPath)
 		shell := InitShell(goShellPath)
 
-		stdoutData := make(chan string)
+		stdoutData := make(chan Event)
 		//stderrChan := make(chan string)
 
 		ptmx, err := pty.Start(shell.Cmd)
@@ -41,7 +41,7 @@ func Initialize(shellPath *C.char) {
 		for {
 			output, ok := <-stdoutData
 			if ok {
-				PushEvent(Event{name: output})
+				fmt.Printf("%#v", output)
 			} else {
 				break
 			}
@@ -64,4 +64,5 @@ func main() {
 	defer C.free(unsafe.Pointer(shellPath))
 
 	Initialize(shellPath)
+	select {}
 }

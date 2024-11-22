@@ -13,6 +13,7 @@ var eventQueue = make(chan Event, 256)
 
 type Event struct {
 	name string
+	data any
 }
 
 func PushEvent(e Event) {
