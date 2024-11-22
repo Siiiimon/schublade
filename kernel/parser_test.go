@@ -21,6 +21,14 @@ func TestScan(t *testing.T) {
 				},
 			},
 		},
+		"empty": {
+			input: "",
+			want:  []Event{},
+		},
+		"null": {
+			input: "\000",
+			want:  []Event{},
+		},
 		"line feed": {
 			input: "\r",
 			want: []Event{
