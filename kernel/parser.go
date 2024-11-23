@@ -58,7 +58,7 @@ func scan(bytes []byte) ([]byte, *Event) {
 				data: nil,
 				kind: EventKindFormFeed,
 			}
-		} else {
+		} else if isText(b) {
 			// read until non-text byte
 			var textBuilder strings.Builder
 			var texti int

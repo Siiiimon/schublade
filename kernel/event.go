@@ -15,6 +15,7 @@ typedef enum {
 } EventKind;
 typedef struct KernelEvent {
 	char* name;
+	void* data;
 	EventKind kind;
 } KernelEvent;
 */
@@ -46,6 +47,7 @@ type Event struct {
 func PushEvent(e Event) {
 	select {
 	case eventQueue <- e:
+		Log("Parser", "pushed event %s: '%s'\n", e.name, e.data)
 	default:
 		Log("Event", "failed to push %s. event queue length is %d\n", e.name, len(eventQueue))
 	}

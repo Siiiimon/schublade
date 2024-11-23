@@ -41,7 +41,7 @@ func Initialize(shellPath *C.char) {
 		for {
 			output, ok := <-stdoutData
 			if ok {
-				fmt.Printf("%#v", output)
+				PushEvent(output)
 			} else {
 				break
 			}
@@ -64,5 +64,11 @@ func main() {
 	defer C.free(unsafe.Pointer(shellPath))
 
 	Initialize(shellPath)
-	select {}
+	for {
+		e := PollEvent()
+		if e != nil {
+			fmt.Printf("Event received: %d - %s: '%s'\n", e.kind, C.GoString(e.name), C.GoString((*C.char)(e.data)))
+			FreeEvent(e)
+		}
+	}
 }

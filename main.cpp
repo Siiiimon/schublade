@@ -1,6 +1,5 @@
 #include "terminal.h"
 #include <cstdio>
-#include <unistd.h>
 
 int main(int argc, char** argv) {
     Initialize("/bin/zsh");
@@ -8,10 +7,8 @@ int main(int argc, char** argv) {
     while (1) {
         KernelEvent* e = PollEvent();
         if (e) {
-            printf("Event received: %s\n", e->name);
+            printf("Event received: %d - %s: '%s'\n", e->kind, e->name, (char*) e->data);
             FreeEvent(e);
-        } else {
-            usleep(1000 * 100);
         }
     }
 
