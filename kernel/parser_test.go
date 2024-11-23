@@ -87,6 +87,15 @@ func TestScan(t *testing.T) {
 				},
 			},
 		},
+		"vertical tab": {
+			input: "\v",
+			want: []Event{
+				{
+					name: "VerticalTab",
+					data: nil,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {

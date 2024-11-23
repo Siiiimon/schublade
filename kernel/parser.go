@@ -41,6 +41,11 @@ func scan(bytes []byte) ([]byte, *Event) {
 				name: "LineFeed",
 				data: nil,
 			}
+		} else if b == '\v' {
+			return nil, &Event{
+				name: "VerticalTab",
+				data: nil,
+			}
 		} else {
 			// read until non-text byte
 			var textBuilder strings.Builder
