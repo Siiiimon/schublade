@@ -96,6 +96,15 @@ func TestScan(t *testing.T) {
 				},
 			},
 		},
+		"form feed": {
+			input: "\x0C",
+			want: []Event{
+				{
+					name: "FormFeed",
+					data: nil,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
