@@ -18,6 +18,7 @@ func scan(bytes []byte) ([]byte, *Event) {
 			return nil, &Event{
 				name: "CarriageReturn",
 				data: nil,
+				kind: EventKindCarriageReturn,
 			}
 		} else if b == '\x00' {
 			return nil, nil
@@ -25,31 +26,37 @@ func scan(bytes []byte) ([]byte, *Event) {
 			return nil, &Event{
 				name: "Bell",
 				data: nil,
+				kind: EventKindBell,
 			}
 		} else if b == '\x08' {
 			return nil, &Event{
 				name: "Backspace",
 				data: nil,
+				kind: EventKindBackspace,
 			}
 		} else if b == '\t' {
 			return nil, &Event{
 				name: "Tab",
 				data: nil,
+				kind: EventKindTab,
 			}
 		} else if b == '\n' {
 			return nil, &Event{
 				name: "LineFeed",
 				data: nil,
+				kind: EventKindLineFeed,
 			}
 		} else if b == '\v' {
 			return nil, &Event{
 				name: "VerticalTab",
 				data: nil,
+				kind: EventKindVerticalTab,
 			}
 		} else if b == '\x0C' {
 			return nil, &Event{
 				name: "FormFeed",
 				data: nil,
+				kind: EventKindFormFeed,
 			}
 		} else {
 			// read until non-text byte
@@ -62,12 +69,14 @@ func scan(bytes []byte) ([]byte, *Event) {
 					return bytes[texti:], &Event{
 						name: "Text",
 						data: textBuilder.String(),
+						kind: EventKindText,
 					}
 				}
 			}
 			return nil, &Event{
 				name: "Text",
 				data: textBuilder.String(),
+				kind: EventKindText,
 			}
 		}
 	}
@@ -75,6 +84,7 @@ func scan(bytes []byte) ([]byte, *Event) {
 	return nil, &Event{
 		name: "Error",
 		data: bytes,
+		kind: EventKindError,
 	}
 }
 

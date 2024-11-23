@@ -2,8 +2,20 @@ package main
 
 /*
 #include <stdlib.h>
+typedef enum {
+    KIND_TEXT = 0,
+    KIND_LINE_FEED,
+    KIND_CARRIAGE_RETURN,
+    KIND_BACKSPACE,
+    KIND_TAB,
+    KIND_BELL,
+    KIND_VERTICAL_TAB,
+    KIND_FORM_FEED,
+	KIND_ERROR,
+} EventKind;
 typedef struct KernelEvent {
 	char* name;
+	EventKind kind;
 } KernelEvent;
 */
 import "C"
@@ -11,9 +23,24 @@ import "unsafe"
 
 var eventQueue = make(chan Event, 256)
 
+type Kind C.EventKind
+
+const (
+	EventKindText           Kind = C.KIND_TEXT
+	EventKindLineFeed       Kind = C.KIND_LINE_FEED
+	EventKindCarriageReturn Kind = C.KIND_CARRIAGE_RETURN
+	EventKindBackspace      Kind = C.KIND_BACKSPACE
+	EventKindTab            Kind = C.KIND_TAB
+	EventKindBell           Kind = C.KIND_BELL
+	EventKindVerticalTab    Kind = C.KIND_VERTICAL_TAB
+	EventKindFormFeed       Kind = C.KIND_FORM_FEED
+	EventKindError          Kind = C.KIND_ERROR
+)
+
 type Event struct {
 	name string
 	data any
+	kind Kind
 }
 
 func PushEvent(e Event) {
@@ -31,6 +58,7 @@ func mallocEvent(inEvent Event) *C.KernelEvent {
 	}
 
 	cEvent.name = C.CString(inEvent.name)
+	cEvent.kind = C.EventKind(inEvent.kind)
 
 	return cEvent
 }

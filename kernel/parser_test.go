@@ -18,6 +18,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "Text",
 					data: "hello world",
+					kind: EventKindText,
 				},
 			},
 		},
@@ -35,6 +36,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "CarriageReturn",
 					data: nil,
+					kind: EventKindCarriageReturn,
 				},
 			},
 		},
@@ -44,10 +46,12 @@ func TestScan(t *testing.T) {
 				{
 					name: "Text",
 					data: "foobar",
+					kind: EventKindText,
 				},
 				{
 					name: "CarriageReturn",
 					data: nil,
+					kind: EventKindCarriageReturn,
 				},
 			},
 		},
@@ -57,6 +61,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "Bell",
 					data: nil,
+					kind: EventKindBell,
 				},
 			},
 		},
@@ -66,6 +71,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "Backspace",
 					data: nil,
+					kind: EventKindBackspace,
 				},
 			},
 		},
@@ -75,6 +81,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "Tab",
 					data: nil,
+					kind: EventKindTab,
 				},
 			},
 		},
@@ -84,6 +91,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "LineFeed",
 					data: nil,
+					kind: EventKindLineFeed,
 				},
 			},
 		},
@@ -93,6 +101,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "VerticalTab",
 					data: nil,
+					kind: EventKindVerticalTab,
 				},
 			},
 		},
@@ -102,6 +111,7 @@ func TestScan(t *testing.T) {
 				{
 					name: "FormFeed",
 					data: nil,
+					kind: EventKindFormFeed,
 				},
 			},
 		},
