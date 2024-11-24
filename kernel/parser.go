@@ -78,6 +78,19 @@ func scan(bytes []byte) ([]byte, *Event) {
 				data: textBuilder.String(),
 				kind: EventKindText,
 			}
+		} else if b == '\x1B' {
+			if i+1 >= len(bytes) {
+				// return this escape byte and hope we'll get more data next time
+				return []byte{b}, nil
+			}
+			nextByte := bytes[i+1]
+			// TODO: other Fe Escape Sequences
+			if nextByte == '\x9B' {
+				if i+2 >= len(bytes) {
+					return []byte{b}, nil
+				}
+				return ParseCSI(bytes[i+2:])
+			}
 		}
 	}
 

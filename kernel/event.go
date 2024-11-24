@@ -11,6 +11,7 @@ typedef enum {
     KIND_BELL,
     KIND_VERTICAL_TAB,
     KIND_FORM_FEED,
+	KIND_CURSOR_MOVE,
 	KIND_ERROR,
 } EventKind;
 typedef struct KernelEvent {
@@ -35,6 +36,7 @@ const (
 	EventKindBell           Kind = C.KIND_BELL
 	EventKindVerticalTab    Kind = C.KIND_VERTICAL_TAB
 	EventKindFormFeed       Kind = C.KIND_FORM_FEED
+	EventKindCursorMove     Kind = C.KIND_CURSOR_MOVE
 	EventKindError          Kind = C.KIND_ERROR
 )
 

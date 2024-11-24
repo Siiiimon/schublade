@@ -144,6 +144,10 @@ func TestScan(t *testing.T) {
 					t.Errorf("event[%d]: expected name %q, got %q", i, w.name, g.name)
 				}
 
+				if w.kind != g.kind {
+					t.Errorf("event[%d]: expected kind %q, got %q", i, w.name, g.name)
+				}
+
 				if w.data != nil && g.data != nil {
 					if w.data != g.data {
 						t.Errorf("event[%d]: expected data %q, got %q", i, w.data, g.data)
